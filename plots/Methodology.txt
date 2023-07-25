@@ -1,0 +1,12 @@
+To calculate these ADMD curves:
+
+- 2015 data from all ICPs during the 10 coldest days' evening peak period was used
+(Dates: 20150812 20150813 20150617 20150713 20150810 20150709 20150710 20150811 20150625 20150624, TPs: 36 through 42)
+
+- This data was sliced appropriately using CategoryDwelling2, GasFlag, and kWhStartYear attributes
+- ADMD calculated for each subset
+
+ADMD algorithm:
+- For sequence j = 1:100, take 20 random samples of j ICPs
+- Calculate ADMD for each of the 20 random samples
+- Calculate (and plot) the 95th percentile of the 20 samples
