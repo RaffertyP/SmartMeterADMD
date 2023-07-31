@@ -1,9 +1,11 @@
 # Load packages
 import pandas as pd
-import matplotlib as plt
+#import matplotlib as plt
 import seaborn as sns
 import statsmodels.api as sm
 from functions import build_linear_models
+import matplotlib.pyplot as plt
+
 
 # Read data
 df = pd.read_csv('data/kW2022_WinterPeakMetered.csv')
@@ -82,7 +84,6 @@ lm_results_by_kWh_start_year =pd.concat([lm_results_2005, lm_results_2008_2018],
 
 lm_results_by_kWh_start_year.to_csv('data/lm_results_by_kWhStartYear.csv')
 
-
 # Save to csv
 regression_for_plotting_by_kWhStatYear.to_csv('data/regression_of_kW_peak_by_m2_sep_by_kWh_start_year.csv')
 
@@ -104,13 +105,6 @@ plt.ylim(0)
 
 plt.savefig('plots/dwelling_type_comparison/kW2022_WinterPeakMetered_floor_area_regression.png')
 plt.show()
-
-import pandas as pd
-import pandas as pd
-import statsmodels.api as sm
-import matplotlib.pyplot as plt
-
-# Assuming you already have 'regression_for_plotting_by_kWhStatYear' DataFrame from previous code
 
 # Set size of plot
 plt.figure(figsize=(10, 6))
