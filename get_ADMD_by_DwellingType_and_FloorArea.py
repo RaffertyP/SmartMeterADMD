@@ -27,15 +27,38 @@ df = df[~((df['DwellingType'] == 'House with Gas') & (df['ICP_Property_Floor_Are
 # Remove instances where Category is House without Gas and ICP_Property_Floor_Area > 350
 df = df[~((df['DwellingType'] == 'House without Gas') & (df['ICP_Property_Floor_Area'] > 350))]
 
+# Print unique values for DwellingType
+print(df['DwellingType'].unique())
 
-# Plot histogram of ICP_Property_Floor_Area for each category
-for category in df['DwellingType'].unique():
-    df_category = df[df['DwellingType'] == category]
-    sns.histplot(data=df_category, x='ICP_Property_Floor_Area')
-    plt.title(category)
-    plt.savefig('plots/FloorAreaHist/ICP_Property_Floor_Area_histogram_' + category + '.png')
-    plt.close()
+# Create a new column called DwellingType2 that maps the DwellingType values to the following categories:
+# 'Terraced', 'Flats', and 'Apartments' should all be called 'Attached'
+# everything else should be remain as it is in DwellingType
+df['DwellingType2'] = df['DwellingType'].map({
+    'Terraced': 'Attached',
+    'Flats': 'Attached',
+    'Apartments': 'Attached'
+}).fillna(df['DwellingType'])
 
+# Print unique values for DwellingType2
+print(df['DwellingType2'].unique())
+
+# # Plot histogram of ICP_Property_Floor_Area for each category
+# for category in df['DwellingType2'].unique():
+#     df_category = df[df['DwellingType2'] == category]
+#     sns.histplot(data=df_category, x='ICP_Property_Floor_Area')
+#     plt.title(category)
+#     plt.savefig('plots/FloorAreaHist/ICP_Property_Floor_Area_histogram_' + category + '.png')
+#     plt.close()
+
+# Just change DwellingType to DwellingType2 and drop DwellingType2
+df['DwellingType'] = df['DwellingType2']
+df = df.drop(columns=['DwellingType2'])
+
+# Print unique values for DwellingType
+print(df['DwellingType'].unique())
+
+# Get count of values for each DwellingType
+print(df['DwellingType'].value_counts())
 
 # Descriptive statistics
 print(df.describe())
@@ -66,10 +89,19 @@ grouped_df = df.groupby('DwellingType').agg({
 })
 print(grouped_df)
 
+
+# For DwellingType = Lifestyle, plot a sctter plot of floor area vs. peak electricity consumption with line of best fit
+df_lifestyle = df[df['DwellingType'] == 'Lifestyle']
+plt.scatter(df_lifestyle['ICP_Property_Floor_Area'], df_lifestyle['kW2022_WinterPeakMetered'])
+plt.xlabel('ICP_Property_Floor_Area')
+plt.ylabel('kW2022_WinterPeakMetered')
+plt.title('Lifestyle')
+plt.show()
+
 # Combine 2005 and more recent data
 results_df, df_regression = build_linear_models(df)
 
-results_df.to_csv('data/lm_all_floor_area.csv')
+results_df.to_csv('data/lm_all_floor_area.csv', index=False)
 
 lm_results_2005, regression_for_plotting_2005 = build_linear_models(df[df['kWhStartYear'] == 2005])
 lm_results_2008_2018, regression_for_plotting_2008_2018 = build_linear_models(df[(df["kWhStartYear"] >= 2008) & (df["kWhStartYear"] <= 2018)])
@@ -82,7 +114,7 @@ lm_results_2008_2018['YearsIncluded'] = '2008 to 2018'
 regression_for_plotting_by_kWhStatYear = pd.concat([regression_for_plotting_2005, regression_for_plotting_2008_2018], axis=0)
 lm_results_by_kWh_start_year =pd.concat([lm_results_2005, lm_results_2008_2018], axis=0)
 
-lm_results_by_kWh_start_year.to_csv('data/lm_results_by_kWhStartYear.csv')
+lm_results_by_kWh_start_year.to_csv('data/lm_results_by_kWhStartYear.csv', index=False)
 
 # Save to csv
 regression_for_plotting_by_kWhStatYear.to_csv('data/regression_of_kW_peak_by_m2_sep_by_kWh_start_year.csv')
